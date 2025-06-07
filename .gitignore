@@ -1,0 +1,13 @@
+# Arquivos sensíveis
+.env
+google-credentials.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Ambiente virtual
+venv/
+
+# Outros
+*.log
