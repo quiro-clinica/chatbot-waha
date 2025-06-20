@@ -1,7 +1,7 @@
 services:
   evolution-api:
     container_name: evolution_api
-    image: atendai/evolution-api:v2.1.1
+    image: atendai/evolution-api:latest
     restart: always
     ports:
       - "8080:8080"
@@ -47,6 +47,17 @@ services:
       - evolution-api
       - redis
     restart: always
+  
+  streamlit_dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      - redis
+      - postgres
+
 
 volumes:
   evolution_instances:

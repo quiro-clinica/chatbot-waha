@@ -36,3 +36,4 @@ def validar_dia(data_str: str):
     return None  # Tudo certo
     
 
+

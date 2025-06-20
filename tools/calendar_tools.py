@@ -7,7 +7,6 @@ from services.services_calendar import ServicesCalendar
 from validadores import validar_dia
 from langchain.tools.base import ToolException
 
-
 service = ServicesCalendar.criar_servico_calendar()
 
 class MarcarConsultaInput(BaseModel):

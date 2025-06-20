@@ -1,13 +1,22 @@
-# Arquivos sensíveis
+# Ambientes virtuais
+venv/
+
+# Credenciais e variáveis sensíveis
+*.env
 .env
 google-credentials.json
 
-# Python
+# Arquivos temporários / sistema
 __pycache__/
 *.pyc
-
-# Ambiente virtual
-venv/
-
-# Outros
+*.pyo
 *.log
+*.db
+*.sqlite3
+
+# IDEs
+.vscode/
+.idea/
+
+# Streamlit cache
+.streamlit/
