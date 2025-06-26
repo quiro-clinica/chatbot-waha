@@ -56,7 +56,7 @@ WAHA_INSTANCE_KEY=default
 WAHA_WEBHOOK_URL=http://bot:8000/webhook
 
 # Agenda Google Calendar
-GOOGLE_CALENDAR_ID=maiconwantuil@gmail.com
+GOOGLE_CALENDAR_ID=seu_email
 GOOGLE_CREDENTIALS_PATH=/app/google-credentials.json
 
 # Configuração opcional de versão do WhatsApp Web
