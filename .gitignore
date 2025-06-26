@@ -5,6 +5,7 @@ venv/
 *.env
 .env
 google-credentials.json
+waha_sessions/
 
 # Arquivos temporários / sistema
 __pycache__/

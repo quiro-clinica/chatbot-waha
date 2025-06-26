@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN apk add --no-cache gcc musl-dev postgresql-dev
+RUN apk add --no-cache gcc musl-dev postgresql-dev curl
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
@@ -13,7 +13,13 @@ COPY . .
 
 COPY google-credentials.json /app/google-credentials.json
 
+# Copia o novo entrypoint
+COPY entrypoint.sh /app/entrypoint.sh
+
+# Dá permissão
+RUN chmod +x /app/entrypoint.sh
+
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
+# Usa forma recomendada (lista JSON)
+CMD ["/app/entrypoint.sh"]

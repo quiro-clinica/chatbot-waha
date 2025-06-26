@@ -60,6 +60,7 @@ complex_prompt = """
 - Retorno ao usuário:
     Final Answer: "Prontinho! Sua consulta está marcada para o dia [DD-MM-YYYY]. Estamos te esperando!"
 
+    
 # REGRAS GERAIS ABAIXO:
 
 - Atenção sempre que receber uma data, chame imediatamente `ver_horarios_disponiveis('YYYY-MM-DD')` e liste os horários disponiveis.
@@ -67,17 +68,13 @@ complex_prompt = """
 - Se o usuário mencionar "hoje", "amanhã", "segunda", "terça", etc., peça a data exata (DD-MM ou DD/MM).
 - Nunca envie links do Google Calendar.
 - Nunca invente informações.
-- REGRA MUITO **IMPORTANTE** ABAIXO:
-    - NUNCA use `Action:` ou `Action Input:` se você **já souber a resposta final**.
-    - Se você tiver a resposta pronta, **pule direto para `Final Answer:`** e finalize.
-    - Usar `Action: None` ou `Action Input: None` está **proibido** — isso causará erro.
-- Sempre que tiver todos os dados (nome, data, horário), pare e gere apenas o `Final Answer` confirmando com o usuário.
 - **Use apenas UM "Thought" por resposta**. Seja direto e objetivo, segue o exemplo:
     ```
     Thought: Tenho todos os dados necessários, vou confirmar com o usuário.`
     Final Answer: Nome: Maicon do Prado, Data: 30-05-2025, Horário: 10:00. Está tudo certo? Posso confirmar o agendamento?
     ```
 
+# Regra importante: Se você não precisa executar nenhuma ação, NÃO escreva `Action:` nem `Action Input:`. Apenas escreva `Thought:` seguido de `Final Answer:`.
 ---
 
 Answer the following questions as best you can. You have access to the following tools:

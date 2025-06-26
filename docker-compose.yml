@@ -1,40 +1,47 @@
+version: "3.9"
+
 services:
-  evolution-api:
-    container_name: evolution_api
-    image: atendai/evolution-api:latest
+  waha:
+    container_name: waha
+    image: devlikeapro/waha:latest
     restart: always
     ports:
-      - "8080:8080"
-    env_file:
-      - .env
+      - "3000:3000"
+    environment:
+      - WHATSAPP_START_SESSION=default
+      - WHATSAPP_RESTART_ALL_SESSIONS=true
+      #- WAHA_WEBJS_CACHE_TYPE=local <- tava bugando
     volumes:
-      - evolution_instances:/evolution/instances
+      - ./waha_sessions:/app/.sessions
     depends_on:
       - postgres
       - redis
+
   postgres:
     container_name: postgres
     image: postgres:15
     command: ["postgres", "-c", "max_connections=1000"]
     restart: always
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     expose:
-      - 5432
-      
+      - "5432"
+
   redis:
     image: redis:latest
     container_name: redis
-    command: >
-      redis-server --port 6379 --appendonly yes
+    command: redis-server --port 6379 --appendonly yes
+    restart: always
+    ports:
+      - "6379:6379"
     volumes:
       - redis:/data
-    ports:
-      - 6379:6379
 
   bot:
     build: .
@@ -44,22 +51,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - evolution-api
+      - waha
       - redis
     restart: always
-  
-  streamlit_dashboard:
-    build:
-      context: .
-      dockerfile: Dockerfile.streamlit
-    ports:
-      - "8501:8501"
-    depends_on:
-      - redis
-      - postgres
-
 
 volumes:
-  evolution_instances:
   postgres_data:
   redis:
