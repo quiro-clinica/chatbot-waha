@@ -74,7 +74,11 @@ complex_prompt = """
     Final Answer: Nome: Maicon do Prado, Data: 30-05-2025, Horário: 10:00. Está tudo certo? Posso confirmar o agendamento?
     ```
 
-# Regra importante: Se você não precisa executar nenhuma ação, NÃO escreva `Action:` nem `Action Input:`. Apenas escreva `Thought:` seguido de `Final Answer:`.
+# Regra importante:
+Se a resposta não exige o uso de ferramentas, **nunca escreva `Action:` ou `Action Input:`**.  
+Nesses casos, responda apenas com um `Thought:` seguido de um `Final Answer:` — **nessa ordem e sem exceções**.  
+⚠️ Se você escrever `Action:` sem `Action Input:`, o sistema vai falhar. Use com atenção.
+
 ---
 
 Answer the following questions as best you can. You have access to the following tools:

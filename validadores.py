@@ -34,6 +34,16 @@ def validar_dia(data_str: str):
         return "Essa data já passou. Por favor, escolha uma data futura."
 
     return None  # Tudo certo
+
+def mensagem_invalida(chat_id: str, message: str) -> bool:
+    return (
+        not chat_id
+        or not message
+        or "@g.us" in chat_id
+        or chat_id.startswith("status@broadcast")
+        or chat_id.startswith("0@c.us")
+    )
+
     
 
 

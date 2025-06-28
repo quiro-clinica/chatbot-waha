@@ -1,11 +1,15 @@
 import json
+
 from typing import List
 from datetime import datetime
 from pydantic import BaseModel
+
 from langchain_core.tools import tool
+from langchain.tools.base import ToolException
+
 from services.services_calendar import ServicesCalendar
 from validadores import validar_dia
-from langchain.tools.base import ToolException
+from logger_config import logger
 
 service = ServicesCalendar.criar_servico_calendar()
 
@@ -32,7 +36,9 @@ def marcar_consulta_wrapper(input_data: str) -> str:
             data_fim=input_dict["data_fim"]
         )
     except Exception as e:
+        logger.error(f"[ERRO] Falha ao marcar consulta com dados: {input_data} | Erro: {e}")
         return f"Erro ao processar os dados da consulta: {str(e)}"
+
 
 
 def gerar_horarios_disponiveis() -> List[str]:
@@ -48,18 +54,16 @@ consulta_concluida = False #da tool abaixo
 def ver_horarios_disponiveis(data: str) -> str:
     """
     Retorna os horários disponíveis para uma data específica no formato 'YYYY-MM-DD'.
-    Por exemplo: '2025-06-06'
     """
     try:
-        # Valida e converte a data
         try:
             data_obj = datetime.strptime(data, "%Y-%m-%d")
         except ValueError:
             raise ToolException(f"Formato inválido para a data: '{data}'. Use 'YYYY-MM-DD'.")
 
         data_formatada = data_obj.strftime("%d-%m-%Y")
-
         mensagem_erro = validar_dia(data_formatada)
+
         if mensagem_erro:
             raise ToolException(mensagem_erro)
 
@@ -75,7 +79,11 @@ def ver_horarios_disponiveis(data: str) -> str:
         return f"Horários disponíveis para {data}: {', '.join(livres)}."
 
     except ToolException as e:
+        from logger_config import logger
+        logger.warning(f"[ToolException] ver_horarios_disponiveis: {e} | data='{data}'")
         raise e
 
     except Exception as e:
+        from logger_config import logger
+        logger.error(f"[ERRO] ver_horarios_disponiveis falhou: {e} | data='{data}'")
         raise ToolException(f"Erro ao verificar horários disponíveis: {str(e)}")

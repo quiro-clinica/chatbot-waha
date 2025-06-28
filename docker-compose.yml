@@ -10,7 +10,6 @@ services:
     environment:
       - WHATSAPP_START_SESSION=default
       - WHATSAPP_RESTART_ALL_SESSIONS=true
-      #- WAHA_WEBJS_CACHE_TYPE=local <- tava bugando
     volumes:
       - ./waha_sessions:/app/.sessions
     depends_on:
