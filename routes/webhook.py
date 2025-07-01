@@ -33,6 +33,7 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
     data = payload.get("payload", {})
     chat_id = data.get("from")
     message = data.get("body")
+    message_id = payload["id"]
 
     if mensagem_invalida(chat_id, message):
         return {"status": "ignorado"}  # ⛔️ sem log, sem print
@@ -53,6 +54,7 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
     try:
         resposta_ia = bot.invoke(message, chat_id=chat_id)
         waha.send_whatsapp_message(chat_id, resposta_ia)
+        waha.mark_as_seen(chat_id, message_id)
         salvar_timestamp(chat_id)
     except Exception as e:
         logger.error(f"[ERRO][IA] Falha ao responder {chat_id}: {e}")
