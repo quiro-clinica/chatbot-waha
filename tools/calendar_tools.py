@@ -3,6 +3,7 @@ import json
 from typing import List
 from datetime import datetime
 from pydantic import BaseModel
+import redis
 
 from langchain_core.tools import tool
 from langchain.tools.base import ToolException
@@ -13,6 +14,8 @@ from logger_config import logger
 
 service = ServicesCalendar.criar_servico_calendar()
 
+redis_consultas = redis.Redis(host="redis", port=6379, db=11, decode_responses=True)
+
 class MarcarConsultaInput(BaseModel):
     nome_paciente: str
     data_inicio: str
@@ -21,6 +24,16 @@ class MarcarConsultaInput(BaseModel):
 def marcar_consulta(nome_paciente: str, data_inicio: str, data_fim: str) -> str:
     event = ServicesCalendar.criar_evento(nome_paciente, data_inicio, data_fim)
     created_event = ServicesCalendar.inserir_evento(service, event)
+    consulta_info = {
+        "nome_paciente": nome_paciente,
+        "data_inicio": data_inicio,
+        "data_fim": data_fim,
+        "link_evento": created_event.get('htmlLink', '')
+    }
+
+    # Salva na lista do Redis, sem separar por dia
+    redis_consultas.rpush("consultas_marcadas", json.dumps(consulta_info))
+
     return f"Consulta marcada com sucesso: {created_event.get('htmlLink')}"
 
 @tool
@@ -44,7 +57,7 @@ def marcar_consulta_wrapper(input_data: str) -> str:
 def gerar_horarios_disponiveis() -> List[str]:
     """Gera a lista de horários possíveis entre 07:00–12:00 e 13:00–19:00."""
     horarios = [f"{h:02d}:00" for h in range(7, 12)] 
-    horarios += [f"{h:02d}:00" for h in range(13, 19)]  
+    horarios += [f"{h:02d}:00" for h in range(13, 20)]  
     return horarios
 
 

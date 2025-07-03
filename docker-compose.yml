@@ -47,12 +47,29 @@ services:
     container_name: bot
     ports:
       - "8000:8000"
+    volumes:
+      - .:/app  # Para acessar logs da pasta local
     env_file:
       - .env
     depends_on:
       - waha
       - redis
     restart: always
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: painel_streamlit
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app  # Para acessar logs da pasta local
+    depends_on:
+      - bot
+      - redis
+  
+   
 
 volumes:
   postgres_data:

@@ -52,7 +52,7 @@ class ServicesCalendar:
     def buscar_eventos_do_dia(service, data: str):
         try:
             time_min = f"{data}T07:00:00-03:00"
-            time_max = f"{data}T19:00:00-03:00" 
+            time_max = f"{data}T20:00:00-03:00" 
 
             eventos = service.events().list(
                 calendarId=GOOGLE_CALENDAR_ID,

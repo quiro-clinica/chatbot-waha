@@ -12,7 +12,7 @@ waha = Waha()
 
 redis_timeout = Redis(host="redis", port=6379, db=10, decode_responses=True)
 
-TIMEOUT = 1500  # 25 minutos
+TIMEOUT = 1500  # 2 minutos
 
 async def monitorar_timeout():
     while True:
@@ -35,7 +35,7 @@ async def monitorar_timeout():
                     logger.info(f"[TIMEOUT] {chat_id} inativo por {int(inatividade)} segundos. Finalizando atendimento.")
                     finalizar_atendimento(chat_id)
                     try:
-                        waha.send_whatsapp_message(chat_id, "Encerramos o atendimento por inatividade. Se precisar de algo, é só mandar uma nova mensagem 😊")
+                        waha.send_whatsapp_message(chat_id, "Encerramos o atendimento por inatividade. Se precisar de algo, é só mandar uma nova mensagem. 😊")
                         logger.info(f"[TIMEOUT] Mensagem de encerramento enviada para {chat_id}.")
                     except Exception as e:
                         logger.error(f"[TIMEOUT][ERRO] Falha ao enviar mensagem de encerramento: {e}")

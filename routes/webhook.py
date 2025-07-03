@@ -32,15 +32,19 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
 
     data = payload.get("payload", {})
     chat_id = data.get("from")
+    message_type = data.get("type")
     message = data.get("body")
-    message_id = payload["id"]
+    media = data.get("media")
 
+    if message_type == "audio" or (media and message_type != "chat"):
+        aviso = "Por enquanto não posso escutar áudios. Sou um assistente virtual. Por favor, digite sua mensagem. 🙂"
+        waha.send_whatsapp_message(chat_id, aviso)
+        logger.info(f"[ÁUDIO] Mensagem de áudio detectada de {chat_id}. Resposta automática enviada.")
+        return {"status": "mensagem_de_audio"}
+    
     if mensagem_invalida(chat_id, message):
         return {"status": "ignorado"}  # ⛔️ sem log, sem print
-
-    
-    logger.info(f"[Webhook Recebido] {data}")  # ✅ substitui print
-
+       
     if not is_user_in_queue(chat_id):
         enqueue(chat_id)
         logger.info(f"Usuário {chat_id} adicionado à fila.")
@@ -54,7 +58,6 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
     try:
         resposta_ia = bot.invoke(message, chat_id=chat_id)
         waha.send_whatsapp_message(chat_id, resposta_ia)
-        waha.mark_as_seen(chat_id, message_id)
         salvar_timestamp(chat_id)
     except Exception as e:
         logger.error(f"[ERRO][IA] Falha ao responder {chat_id}: {e}")

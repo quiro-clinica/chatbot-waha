@@ -13,9 +13,13 @@ from prompts.prompts_texts import classification, simple_prompt, complex_prompt
 from redis_tools.redis_client_history import add_to_history, get_history
 from logger_config import logger
 
+from time import strftime
+
 os.environ['GROQ_API_KEY'] = GROQ_API_KEY
 
 str_parser = StrOutputParser()
+
+date_now = strftime("%a, %d %b %Y %H:%M:%S")
 
 tools = [marcar_consulta_wrapper, ver_horarios_disponiveis]
 
@@ -43,7 +47,7 @@ simple_chain = (
 
 agent_prompt = PromptTemplate(
     template=complex_prompt,
-    input_variables=["tools", "tool_names", "pergunta", "agent_scratchpad"]
+    input_variables=["tools", "tool_names", "pergunta", "agent_scratchpad", "date_now"]
 )
 
 agent = create_react_agent(
@@ -69,6 +73,7 @@ def route(message, classificacao, chat_id=None):
         try:
             resposta_dict = complex_agent_executor.invoke({
                 "pergunta": pergunta_contextualizada,
+                "date_now": date_now,
                 })
             return resposta_dict.get("output", str(resposta_dict))
 

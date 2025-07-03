@@ -24,21 +24,5 @@ class Waha:
             json=payload,
             headers=headers,
         )
-    
-    def mark_as_seen(self, chat_id, message_id):
-        url = f"{self.__api_url}/api/sendSeen"
-        headers = {
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "chatId": chat_id,
-            "messageIds": [message_id],
-            "participant": None,
-            "session": self.__instance_key
-        }
-        try:
-            response = requests.post(url, json=payload, headers=headers)
-            if response.status_code not in [200, 201]:
-                logger.error(f"[WAHA][mark_as_seen] Falha ao marcar como lida: {response.status_code} | {response.text}")
-        except Exception as e:
-            logger.error(f"[WAHA][mark_as_seen] Exceção ao marcar como lida: {e}")
+
+
