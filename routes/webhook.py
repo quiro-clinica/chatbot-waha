@@ -12,7 +12,7 @@ from validadores import mensagem_invalida
 from redis_tools.redis_queue import enqueue, is_user_in_queue, get_first_in_queue
 from redis_tools.redis_pending_messages import save_pending_message
 from redis_tools.redis_timeout import salvar_timestamp
-
+from services.metricas import registrar_inicio
 
 waha = Waha()
 bot = AIBot()
@@ -47,7 +47,9 @@ async def webhook(request: Request, db: Session = Depends(get_db)):
        
     if not is_user_in_queue(chat_id):
         enqueue(chat_id)
+        registrar_inicio(db, chat_id)  # ✅ Registrando início da conversa
         logger.info(f"Usuário {chat_id} adicionado à fila.")
+        
 
     first_in_line = get_first_in_queue()
     if chat_id != first_in_line:

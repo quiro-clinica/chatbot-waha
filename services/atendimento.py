@@ -5,9 +5,11 @@ from logger_config import logger
 from redis_tools.redis_queue import dequeue, get_first_in_queue, remove_from_set
 from redis_tools.redis_pending_messages import get_pending_message, delete_pending_message
 from redis_tools.redis_timeout import remover_timestamp, salvar_timestamp
+from services.metricas import atualizar_status
+from database import SessionLocal
 
 waha = Waha()
-
+db = SessionLocal()
 bot = AIBot()
 
 def finalizar_atendimento(chat_id: str):
@@ -34,5 +36,42 @@ def finalizar_atendimento(chat_id: str):
         else:
             logger.info("[ATENDIMENTO] Fila vazia.")
 
+        # ✅ Atualiza status de finalizado na métrica
+        atualizar_status(db, chat_id, "finalizado")
+
     except Exception as e:
         logger.error(f"[ERRO][ATENDIMENTO] Falha ao finalizar atendimento: {e}")
+
+    finally:
+        db.close()
+
+def finalizar_atendimento_abandonado(chat_id: str):
+    try:
+        logger.info(f"[ATENDIMENTO] Finalizando atendimento para {chat_id}...")
+
+        remover_timestamp(chat_id)
+        chat_removido = dequeue()
+        if chat_removido:
+            remove_from_set(chat_removido)
+
+        proximo = get_first_in_queue()
+
+        if proximo:
+            logger.info(f"[ATENDIMENTO] Próximo da fila é {proximo}. Verificando mensagem pendente...")
+
+            mensagem_pendente = get_pending_message(proximo)
+            if mensagem_pendente:
+                logger.info(f"[ATENDIMENTO] Mensagem pendente encontrada. Invocando IA...")
+                resposta = bot.invoke(mensagem_pendente, chat_id=proximo)
+                waha.send_whatsapp_message(chat_id=proximo, message=resposta)
+                salvar_timestamp(proximo)
+                delete_pending_message(proximo)
+        else:
+            logger.info("[ATENDIMENTO] Fila vazia.")
+        atualizar_status(db, chat_id, "abandonado")
+
+    except Exception as e:
+        logger.error(f"[ERRO][ATENDIMENTO] Falha ao finalizar atendimento: {e}")
+
+    finally:
+        db.close()

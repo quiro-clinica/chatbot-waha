@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from redis import Redis
 from redis_tools.redis_timeout import obter_timestamp
 
-from services.atendimento import finalizar_atendimento
+from services.atendimento import finalizar_atendimento_abandonado
 from logger_config import logger
 from services.waha_api import Waha
 
@@ -33,7 +33,7 @@ async def monitorar_timeout():
 
                 if inatividade > TIMEOUT:
                     logger.info(f"[TIMEOUT] {chat_id} inativo por {int(inatividade)} segundos. Finalizando atendimento.")
-                    finalizar_atendimento(chat_id)
+                    finalizar_atendimento_abandonado(chat_id)
                     try:
                         waha.send_whatsapp_message(chat_id, "Encerramos o atendimento por inatividade. Se precisar de algo, é só mandar uma nova mensagem. 😊")
                         logger.info(f"[TIMEOUT] Mensagem de encerramento enviada para {chat_id}.")
